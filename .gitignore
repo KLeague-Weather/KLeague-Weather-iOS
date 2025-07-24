@@ -1,0 +1,20 @@
+# Xcode 관련 파일 무시
+*.xcuserstate
+*.xcworkspace
+*.xcuserdata
+
+# 빌드 결과물 무시
+build/
+DerivedData/
+
+# CocoaPods
+Pods/
+
+# vscode
+.vscode/
+
+# 기타 macOS 시스템 파일
+.DS_Store
+
+# 리드미
+README.md
