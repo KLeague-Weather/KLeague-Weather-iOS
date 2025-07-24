@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import SwiftUI
 
 class HomeViewController: UIViewController {
 
@@ -33,3 +34,12 @@ class HomeViewController: UIViewController {
         }
     }
 }
+
+// MARK: - Preview
+#if DEBUG
+struct HomeViewController_Previews: PreviewProvider {
+    static var previews: some View {
+        HomeViewController().toPreview()
+    }
+}
+#endif
