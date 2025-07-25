@@ -1,5 +1,5 @@
 ---
-name: "\U0001FAE7직관가자 ISSUE\U0001FAE7"
+name: "직관가자 ISSUE"
 about: 직관가자 이슈 템플릿입니다
 title: ''
 labels: ''
