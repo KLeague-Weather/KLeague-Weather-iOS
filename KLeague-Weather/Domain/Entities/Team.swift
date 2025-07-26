@@ -13,8 +13,8 @@ struct Team {
     let league: League
     let logoURL: String
     let stadiumName: String
-    let latitude: Double
-    let longitude: Double
+    let nx: String
+    let ny: String
 }
 
 enum League: String, CaseIterable {

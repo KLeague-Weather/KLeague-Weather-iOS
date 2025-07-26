@@ -72,7 +72,7 @@ class HomeViewController: UIViewController {
         return collectionView
     }()
     
-    // MARK: - lifecycle
+    // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -80,7 +80,7 @@ class HomeViewController: UIViewController {
         setupActions()
     }
     
-    // MARK: - setup
+    // MARK: - 설정
     private func setupUI() {
         view.backgroundColor = .systemGroupedBackground
         title = "직관가자⚽️"
@@ -130,7 +130,7 @@ class HomeViewController: UIViewController {
         segmentedControl.addTarget(self, action: #selector(segmentedControlChanged), for: .valueChanged)
     }
     
-    // MARK: - actions
+    // MARK: - 액션
     @objc private func segmentedControlChanged() {
         let selectedLeague = League.allCases[segmentedControl.selectedSegmentIndex]
         viewModel.selectLeague(selectedLeague)
@@ -170,8 +170,9 @@ extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let team = viewModel.getTeam(at: indexPath.item) else { return }
         
-        // TODO: WeatherDetailViewController로 이동
-        print("Selected team: \(team.name)")
+        // WeatherDetailViewController로 이동
+        let weatherDetailVC = WeatherDetailViewController(team: team)
+        navigationController?.pushViewController(weatherDetailVC, animated: true)
         
         // 선택 효과 제거
         collectionView.deselectItem(at: indexPath, animated: true)
@@ -190,7 +191,7 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - Preview
+// MARK: - 미리보기
 #if DEBUG
 struct HomeViewController_Previews: PreviewProvider {
     static var previews: some View {

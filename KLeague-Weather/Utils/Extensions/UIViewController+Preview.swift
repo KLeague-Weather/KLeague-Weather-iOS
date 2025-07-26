@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-// MARK: - UIViewController Preview Extension
+// MARK: - UIViewController 미리보기 확장
 extension UIViewController {
     private struct Preview: UIViewControllerRepresentable {
         let viewController: UIViewController
@@ -27,7 +27,7 @@ extension UIViewController {
     }
 }
 
-// MARK: - UIView Preview Extension
+// MARK: - UIView 미리보기 확장
 extension UIView {
     private struct Preview: UIViewRepresentable {
         let view: UIView

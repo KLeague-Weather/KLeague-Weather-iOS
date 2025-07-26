@@ -40,7 +40,7 @@ class TeamCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Setup
+    // MARK: - 설정
     private func setupUI() {
         backgroundColor = .systemBackground
         layer.cornerRadius = Constants.UI.cornerRadius
@@ -67,13 +67,13 @@ class TeamCell: UICollectionViewCell {
         }
     }
     
-    // MARK: - Configuration
+    // MARK: - 구성
     func configure(with team: Team) {
         teamNameLabel.text = team.name
         logoImageView.image = UIImage(named: team.logoURL)
     }
     
-    // MARK: - Reuse
+    // MARK: - 재사용
     override func prepareForReuse() {
         super.prepareForReuse()
         logoImageView.image = nil
@@ -81,7 +81,7 @@ class TeamCell: UICollectionViewCell {
     }
 }
 
-// MARK: - Preview
+// MARK: - 미리보기
 #if DEBUG
 struct TeamCell_Previews: PreviewProvider {
     static var previews : some View {
