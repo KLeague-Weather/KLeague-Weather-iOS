@@ -1,11 +1,26 @@
 //
-//  TeamData.swift
+//  Team.swift
 //  KLeague-Weather
 //
 //  Created by JunnKyuu on 7/24/25.
 //
 
 import Foundation
+
+struct Team {
+    let id: Int
+    let name: String
+    let league: League
+    let logoURL: String
+    let stadiumName: String
+    let nx: String
+    let ny: String
+}
+
+enum League: String, CaseIterable {
+    case kLeague1 = "K리그1"
+    case kLeague2 = "K리그2"
+}
 
 struct TeamData {
     static let allTeams: [Team] = [
@@ -39,4 +54,4 @@ struct TeamData {
         Team(id: 25, name: "청주FC", league: .kLeague2, logoURL: "cheongju_logo", stadiumName: "청주종합운동장", nx: "71", ny: "103"),
         Team(id: 26, name: "화성FC", league: .kLeague2, logoURL: "hwaseong_logo", stadiumName: "화성종합운동장", nx: "57", ny: "117")
     ]
-} 
+}

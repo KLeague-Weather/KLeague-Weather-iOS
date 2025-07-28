@@ -7,16 +7,6 @@
 
 import Foundation
 
-struct Weather {
-    let temperature: Double
-    let weatherDescription: String
-    let humidity: Int
-    let windSpeed: Double
-    let feelsLike: Double
-    let weatherIcon: String
-    let weatherType: WeatherType
-}
-
 enum WeatherType: String, CaseIterable {
     case sunny = "01.sun-light"
     case sunset = "02.sunset-light"

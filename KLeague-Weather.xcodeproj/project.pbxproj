@@ -20,7 +20,7 @@
 		0CB6FD752E320CDB0084A916 /* Exceptions for "KLeague-Weather" folder in "KLeague-Weather" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Application/SupportingFiles/Info.plist,
+				SupportingFiles/Info.plist,
 			);
 			target = 0CB6FD622E320CDA0084A916 /* KLeague-Weather */;
 		};
