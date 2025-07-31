@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0CB6FD7D2E320FAD0084A916 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 0CB6FD7C2E320FAD0084A916 /* Alamofire */; };
 		0CB6FD802E320FCB0084A916 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0CB6FD7F2E320FCB0084A916 /* SnapKit */; };
-		0CB6FDB72E321D330084A916 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0CB6FDB62E321D330084A916 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,7 +41,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0CB6FDB72E321D330084A916 /* Kingfisher in Frameworks */,
 				0CB6FD7D2E320FAD0084A916 /* Alamofire in Frameworks */,
 				0CB6FD802E320FCB0084A916 /* SnapKit in Frameworks */,
 			);
@@ -89,7 +87,6 @@
 			packageProductDependencies = (
 				0CB6FD7C2E320FAD0084A916 /* Alamofire */,
 				0CB6FD7F2E320FCB0084A916 /* SnapKit */,
-				0CB6FDB62E321D330084A916 /* Kingfisher */,
 			);
 			productName = "KLeague-Weather";
 			productReference = 0CB6FD632E320CDA0084A916 /* KLeague-Weather.app */;
@@ -122,7 +119,6 @@
 			packageReferences = (
 				0CB6FD7B2E320FAD0084A916 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				0CB6FD7E2E320FCB0084A916 /* XCRemoteSwiftPackageReference "SnapKit" */,
-				0CB6FDB52E321D330084A916 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0CB6FD642E320CDA0084A916 /* Products */;
@@ -165,12 +161,12 @@
 				DEVELOPMENT_TEAM = FN67GXC5GH;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "/Users/junnkyuu/Desktop/git/KLeague-Weather/KLeague-Weather/Application/SupportingFiles/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "직관가자";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -199,12 +195,12 @@
 				DEVELOPMENT_TEAM = FN67GXC5GH;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "/Users/junnkyuu/Desktop/git/KLeague-Weather/KLeague-Weather/Application/SupportingFiles/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "직관가자";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -384,14 +380,6 @@
 				minimumVersion = 5.7.1;
 			};
 		};
-		0CB6FDB52E321D330084A916 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.5.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -404,11 +392,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0CB6FD7E2E320FCB0084A916 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
-		};
-		0CB6FDB62E321D330084A916 /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0CB6FDB52E321D330084A916 /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

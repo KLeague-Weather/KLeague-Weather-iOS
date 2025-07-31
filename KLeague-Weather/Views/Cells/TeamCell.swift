@@ -22,7 +22,16 @@ class TeamCell: UICollectionViewCell {
     
     private let teamNameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: Constants.Font.gmarketSansMedium, size: 14)
+        label.font = UIFont(name: Constants.Font.gmarketSansBold, size: 18)
+        label.textColor = .label
+        label.textAlignment = .center
+        label.numberOfLines = 2
+        return label
+    }()
+    
+    private let teamStadiumNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: Constants.Font.gmarketSansMedium, size: 13)
         label.textColor = .label
         label.textAlignment = .center
         label.numberOfLines = 2
@@ -44,33 +53,45 @@ class TeamCell: UICollectionViewCell {
     private func setupUI() {
         backgroundColor = .systemBackground
         layer.cornerRadius = Constants.UI.cornerRadius
-        layer.shadowColor = UIColor.black.cgColor
+        
+        // 다크모드 지원을 위한 테두리와 그림자 설정
+        layer.borderWidth = 0.5
+        layer.borderColor = UIColor.separator.cgColor
+        
+        layer.shadowColor = UIColor.label.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 2)
-        layer.shadowRadius = 4
-        layer.shadowOpacity = 0.1
+        layer.shadowRadius = 6
+        layer.shadowOpacity = 0.15
         
         contentView.addSubview(logoImageView)
         contentView.addSubview(teamNameLabel)
+        contentView.addSubview(teamStadiumNameLabel)
     }
     
     private func setupConstraints() {
         logoImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(12)
+            make.top.equalToSuperview().offset(16)
             make.centerX.equalToSuperview()
-            make.width.height.equalTo(60)
+            make.width.height.equalTo(70)
         }
         
         teamNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(logoImageView.snp.bottom).offset(8)
+            make.top.equalTo(logoImageView.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(8)
-            make.bottom.equalToSuperview().offset(-12)
+        }
+        
+        teamStadiumNameLabel.snp.makeConstraints { make in
+            make.top.equalTo(teamNameLabel.snp.bottom).offset(4)
+            make.leading.trailing.equalToSuperview().inset(8)
+            make.bottom.equalToSuperview().offset(-10)
         }
     }
     
     // MARK: - 구성
     func configure(with team: Team) {
-        teamNameLabel.text = team.name
         logoImageView.image = UIImage(named: team.logoURL)
+        teamNameLabel.text = team.name
+        teamStadiumNameLabel.text = team.stadiumName
     }
     
     // MARK: - 재사용

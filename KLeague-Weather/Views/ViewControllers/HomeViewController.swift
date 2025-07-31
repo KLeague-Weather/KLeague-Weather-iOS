@@ -17,7 +17,7 @@ class HomeViewController: UIViewController {
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .systemGroupedBackground
-        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = true
         return scrollView
     }()
     
@@ -27,11 +27,20 @@ class HomeViewController: UIViewController {
         return view
     }()
     
+    //    private let titleLabel: UILabel = {
+    //        let label = UILabel()
+    //        label.text = ""
+    //        label.font = UIFont(name: Constants.Font.gmarketSansBold, size: 24)
+    //        label.textColor = .label
+    //        label.textAlignment = .left
+    //        return label
+    //    }()
+    
     private let segmentedControl: UISegmentedControl = {
         let control = UISegmentedControl(items: League.allCases.map { $0.rawValue })
         control.selectedSegmentIndex = 0
         control.backgroundColor = .systemBackground
-        control.selectedSegmentTintColor = .black
+        control.selectedSegmentTintColor = .label
         
         // Gmarket 폰트 설정
         let normalFont = UIFont(name: Constants.Font.gmarketSansMedium, size: 16)
@@ -43,7 +52,7 @@ class HomeViewController: UIViewController {
         ], for: .normal)
         
         control.setTitleTextAttributes([
-            .foregroundColor: UIColor.white,
+            .foregroundColor: UIColor.systemBackground,
             .font: selectedFont ?? UIFont.systemFont(ofSize: 16, weight: .bold)
         ], for: .selected)
         
@@ -80,14 +89,23 @@ class HomeViewController: UIViewController {
         setupActions()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateCollectionViewHeight()
+    }
+    
     // MARK: - 설정
     private func setupUI() {
         view.backgroundColor = .systemGroupedBackground
-        title = "직관가자⚽️"
-        navigationController?.navigationBar.prefersLargeTitles = true
+        
+        // 네비게이션 타이틀 숨기기
+        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationItem.largeTitleDisplayMode = .never
+        title = ""
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        //        contentView.addSubview(titleLabel)
         contentView.addSubview(segmentedControl)
         contentView.addSubview(collectionView)
     }
@@ -100,10 +118,19 @@ class HomeViewController: UIViewController {
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.width.equalToSuperview()
+            make.height.equalTo(calculateTotalContentHeight())
         }
         
+        //        titleLabel.snp.makeConstraints { make in
+        //            make.top.equalToSuperview().offset(16)
+        //            make.leading.equalToSuperview().offset(16)
+        //            make.trailing.equalToSuperview().offset(-16)
+        //            make.height.equalTo(32)
+        //        }
+        
         segmentedControl.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
+            //            make.top.equalTo(titleLabel.snp.bottom).offset(16)
+            make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(32)
         }
@@ -111,7 +138,7 @@ class HomeViewController: UIViewController {
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(segmentedControl.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-16)
             make.height.equalTo(calculateCollectionViewHeight())
         }
     }
@@ -123,7 +150,34 @@ class HomeViewController: UIViewController {
         let spacing = Constants.UI.cellSpacing
         let sectionInset = Constants.UI.sectionInset * 2
         
-        return CGFloat(rows) * itemHeight + CGFloat(rows - 1) * spacing + sectionInset
+        let totalHeight = CGFloat(rows) * itemHeight + CGFloat(max(0, rows - 1)) * spacing + sectionInset
+        
+        // 최소 높이 보장
+        return max(totalHeight, 400)
+    }
+    
+    private func calculateTotalContentHeight() -> CGFloat {
+        let titleLabelHeight: CGFloat = 32
+        let titleLabelTopMargin: CGFloat = 16
+        let titleLabelBottomMargin: CGFloat = 16
+        let segmentedControlHeight: CGFloat = 32
+        let segmentedControlBottomMargin: CGFloat = 16
+        let bottomMargin: CGFloat = 16
+        
+        return titleLabelHeight + titleLabelTopMargin + titleLabelBottomMargin +
+        segmentedControlHeight + segmentedControlBottomMargin +
+        calculateCollectionViewHeight() + bottomMargin
+    }
+    
+    private func updateCollectionViewHeight() {
+        collectionView.snp.updateConstraints { make in
+            make.height.equalTo(calculateCollectionViewHeight())
+        }
+        
+        // 스크롤뷰의 contentSize 업데이트
+        contentView.snp.updateConstraints { make in
+            make.height.equalTo(calculateTotalContentHeight())
+        }
     }
     
     private func setupActions() {
@@ -137,9 +191,7 @@ class HomeViewController: UIViewController {
         collectionView.reloadData()
         
         // 컬렉션 뷰 높이 업데이트
-        collectionView.snp.updateConstraints { make in
-            make.height.equalTo(calculateCollectionViewHeight())
-        }
+        updateCollectionViewHeight()
         
         // 애니메이션과 함께 레이아웃 업데이트
         UIView.animate(withDuration: 0.3) {
@@ -168,11 +220,11 @@ extension HomeViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let team = viewModel.getTeam(at: indexPath.item) else { return }
+//        guard let team = viewModel.getTeam(at: indexPath.item) else { return }
         
         // WeatherDetailViewController로 이동
-        let weatherDetailVC = WeatherDetailViewController(team: team)
-        navigationController?.pushViewController(weatherDetailVC, animated: true)
+        //        let weatherDetailVC = WeatherDetailViewController(team: team)
+        //        navigationController?.pushViewController(weatherDetailVC, animated: true)
         
         // 선택 효과 제거
         collectionView.deselectItem(at: indexPath, animated: true)
