@@ -9,11 +9,10 @@ import UIKit
 import SnapKit
 import SwiftUI
 
-class HomeViewController: UIViewController {
-    
+final class HomeViewController: UIViewController {
     private let viewModel = HomeViewModel()
     
-    // MARK: - UI 컴포넌트
+    // MARK: - UI 컴포넌트 즉시 실행 클로저 패턴으로 구현
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .systemGroupedBackground
@@ -26,15 +25,6 @@ class HomeViewController: UIViewController {
         view.backgroundColor = .systemGroupedBackground
         return view
     }()
-    
-    //    private let titleLabel: UILabel = {
-    //        let label = UILabel()
-    //        label.text = ""
-    //        label.font = UIFont(name: Constants.Font.gmarketSansBold, size: 24)
-    //        label.textColor = .label
-    //        label.textAlignment = .left
-    //        return label
-    //    }()
     
     private let segmentedControl: UISegmentedControl = {
         let control = UISegmentedControl(items: League.allCases.map { $0.rawValue })
@@ -81,7 +71,7 @@ class HomeViewController: UIViewController {
         return collectionView
     }()
     
-    // MARK: - 생명주기
+    // MARK: - app lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -94,7 +84,7 @@ class HomeViewController: UIViewController {
         updateCollectionViewHeight()
     }
     
-    // MARK: - 설정
+    // MARK: - setting
     private func setupUI() {
         view.backgroundColor = .systemGroupedBackground
         
@@ -105,7 +95,6 @@ class HomeViewController: UIViewController {
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        //        contentView.addSubview(titleLabel)
         contentView.addSubview(segmentedControl)
         contentView.addSubview(collectionView)
     }
@@ -121,15 +110,7 @@ class HomeViewController: UIViewController {
             make.height.equalTo(calculateTotalContentHeight())
         }
         
-        //        titleLabel.snp.makeConstraints { make in
-        //            make.top.equalToSuperview().offset(16)
-        //            make.leading.equalToSuperview().offset(16)
-        //            make.trailing.equalToSuperview().offset(-16)
-        //            make.height.equalTo(32)
-        //        }
-        
         segmentedControl.snp.makeConstraints { make in
-            //            make.top.equalTo(titleLabel.snp.bottom).offset(16)
             make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(32)
@@ -220,14 +201,18 @@ extension HomeViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        guard let team = viewModel.getTeam(at: indexPath.item) else { return }
-        
-        // WeatherDetailViewController로 이동
-        //        let weatherDetailVC = WeatherDetailViewController(team: team)
-        //        navigationController?.pushViewController(weatherDetailVC, animated: true)
         
         // 선택 효과 제거
         collectionView.deselectItem(at: indexPath, animated: true)
+        
+        // 선택된 팀 가져오기
+        guard let selectedTeam = viewModel.getTeam(at: indexPath.item) else { return }
+        
+        // 다음 화면 초기화(WeatherDetailViewController)
+        let weatherDetailVC = WeatherDetailViewController(team: selectedTeam)
+        
+        // 네비게이션 컨트롤러를 사용해서 화면 전환
+        navigationController?.pushViewController(weatherDetailVC, animated: true)
     }
 }
 
