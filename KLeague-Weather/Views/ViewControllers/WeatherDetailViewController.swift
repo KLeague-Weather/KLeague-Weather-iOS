@@ -9,12 +9,14 @@ import UIKit
 import SwiftUI
 import SnapKit
 
-final class WeatherDetailViewController: UIViewController {
-    // MARK: - 팀 데이터
-    private let team: Team
+final class WeatherDetailViewController: UIViewController, UIGestureRecognizerDelegate {
     
+    // MARK: - Properties
+    private let viewModel: WeatherDetailViewModel
+    
+    // MARK: - Initializer
     init(team: Team) {
-        self.team = team
+        self.viewModel = WeatherDetailViewModel(team: team)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -22,138 +24,261 @@ final class WeatherDetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - UI 컴포넌트
+    // MARK: - UI Components
     
-    // 컨텐트 뷰
-    private lazy var contentView: UIView = {
-        let contentView = UIView()
-        contentView.backgroundColor = .systemBackground
-        
-        return contentView
-    }()
-
-    // 경기장 이름
-    private lazy var stadiumNameLabel: UILabel = {
-        let stadiumNameLabel = UILabel()
-        stadiumNameLabel.text = team.stadiumName
-        stadiumNameLabel.font = UIFont(name: "GmarketSansMedium", size: 23)
-        
-        return stadiumNameLabel
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.backgroundColor = .systemGroupedBackground
+        scrollView.showsVerticalScrollIndicator = false
+        return scrollView
     }()
     
-    // 온도 레이블
-    private let tempLabel: UILabel = {
-        let tempLabel = UILabel()
-        tempLabel.text = "32°"
-        tempLabel.font = UIFont(name: "GmarketSansMedium", size: 70)
-        
-        return tempLabel
-    }()
-    
-    // 직관 컨디션 레이블
-    private let conditionLabel: UILabel = {
-        let conditionLabel = UILabel()
-        conditionLabel.text = "직관하기 힘든 날씨에요,,"
-        conditionLabel.font = UIFont(name: "GmarketSansBold", size: 18)
-        
-        return conditionLabel
-    }()
-    
-    // 직관 조언 레이블
-    private let adviceLabel: UILabel = {
-        let adviceLabel = UILabel()
-        adviceLabel.text = "수분을 충분히 섭취해주세요!"
-        adviceLabel.font = UIFont(name: "GmarketSansBold", size: 18)
-        
-        return adviceLabel
+    private let contentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGroupedBackground
+        return view
     }()
     
     // 팀 로고 이미지뷰
     private lazy var teamLogoImageView: UIImageView = {
-        let teamLogoImageView = UIImageView()
-        teamLogoImageView.contentMode = .scaleAspectFit
-        teamLogoImageView.clipsToBounds = true
-        teamLogoImageView.layer.cornerRadius = Constants.UI.cornerRadius
-        teamLogoImageView.image = UIImage(named: team.logoURL)
-        teamLogoImageView.alpha = 0.2
-        
-        return teamLogoImageView
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = Constants.UI.cornerRadius
+        imageView.image = UIImage(named: viewModel.getTeam().logoURL)
+        return imageView
     }()
     
-    // 날씨 로고 이미지 뷰
-    private lazy var weatherImageView: UIImageView = {
-        let weatherImageView = UIImageView()
-        weatherImageView.contentMode = .scaleAspectFit
-        weatherImageView.clipsToBounds = true
-        weatherImageView.layer.cornerRadius = Constants.UI.cornerRadius
-        
-        if let weatherImage = UIImage(systemName: "sun.max") {
-            weatherImageView.image = weatherImage
-            weatherImageView.tintColor = .systemYellow
-        }
-        
-        return weatherImageView
+    // 경기장 이름
+    private lazy var stadiumNameLabel: UILabel = {
+        let label = UILabel()
+        label.text = viewModel.getTeam().stadiumName
+        label.font = UIFont(name: Constants.Font.gmarketSansMedium, size: 20)
+        label.textColor = .label
+        label.textAlignment = .center
+        return label
     }()
     
-    // MARK: - app lifecycle
+    // 날씨 아이콘
+    private lazy var weatherIconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .systemYellow
+        return imageView
+    }()
+    
+    // 온도 레이블
+    private lazy var temperatureLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: Constants.Font.gmarketSansBold, size: 72)
+        label.textColor = .label
+        label.textAlignment = .center
+        return label
+    }()
+    
+    // 컨디션 레이블
+    private lazy var conditionLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: Constants.Font.gmarketSansBold, size: 20)
+        label.textColor = .label
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    // 조언 레이블
+    private lazy var adviceLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: Constants.Font.gmarketSansMedium, size: 16)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    // 시간별 날씨 섹션 제목
+    private let hourlySectionTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "시간별 날씨"
+        label.font = UIFont(name: Constants.Font.gmarketSansBold, size: 18)
+        label.textColor = .label
+        return label
+    }()
+    
+    // 시간별 날씨 컬렉션뷰
+    private lazy var hourlyCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 12
+        layout.minimumLineSpacing = 12
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.register(HourlyWeatherCell.self, forCellWithReuseIdentifier: HourlyWeatherCell.reuseIdentifier)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.showsHorizontalScrollIndicator = false
+        return collectionView
+    }()
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
+        setupSwipeGesture()
+        updateWeatherData()
         
         navigationController?.navigationBar.tintColor = .label
     }
     
-    // MARK: - setting
+    // MARK: - Setup
     private func setupUI() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         
-        view.addSubview(contentView)
-//        contentView.addSubview(teamNameLabel)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubview(teamLogoImageView)
         contentView.addSubview(stadiumNameLabel)
-        contentView.addSubview(tempLabel)
+        contentView.addSubview(weatherIconImageView)
+        contentView.addSubview(temperatureLabel)
         contentView.addSubview(conditionLabel)
         contentView.addSubview(adviceLabel)
-        contentView.addSubview(teamLogoImageView)
-        contentView.addSubview(weatherImageView)
+        contentView.addSubview(hourlySectionTitleLabel)
+        contentView.addSubview(hourlyCollectionView)
     }
     
     private func setupConstraints() {
-        contentView.snp.makeConstraints { make in
+        scrollView.snp.makeConstraints { make in
             make.edges.equalTo(view.safeAreaLayoutGuide)
         }
         
-        stadiumNameLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(50)
-            make.left.equalToSuperview().offset(30)
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.equalToSuperview()
         }
         
-        tempLabel.snp.makeConstraints { make in
-            make.top.equalTo(stadiumNameLabel.snp.bottom).offset(20)
-            make.left.equalToSuperview().offset(30)
+        teamLogoImageView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(20)
+            make.centerX.equalToSuperview()
+            make.width.height.equalTo(120)
+        }
+        
+        stadiumNameLabel.snp.makeConstraints { make in
+            make.top.equalTo(teamLogoImageView.snp.bottom).offset(20)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
+        
+        weatherIconImageView.snp.makeConstraints { make in
+            make.top.equalTo(stadiumNameLabel.snp.bottom).offset(30)
+            make.centerX.equalToSuperview()
+            make.width.height.equalTo(80)
+        }
+        
+        temperatureLabel.snp.makeConstraints { make in
+            make.top.equalTo(weatherIconImageView.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
         }
         
         conditionLabel.snp.makeConstraints { make in
-            make.top.equalTo(tempLabel.snp.bottom).offset(30)
-            make.left.equalToSuperview().offset(30)
+            make.top.equalTo(temperatureLabel.snp.bottom).offset(20)
+            make.leading.trailing.equalToSuperview().inset(20)
         }
         
         adviceLabel.snp.makeConstraints { make in
             make.top.equalTo(conditionLabel.snp.bottom).offset(10)
-            make.left.equalToSuperview().offset(30)
+            make.leading.trailing.equalToSuperview().inset(20)
         }
         
-        teamLogoImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(180)
-            make.centerX.equalToSuperview()
-            make.width.height.equalTo(450)
+        hourlySectionTitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(adviceLabel.snp.bottom).offset(60)
+            make.leading.equalToSuperview().offset(20)
         }
         
-        weatherImageView.snp.makeConstraints { make in
-            make.bottom.equalToSuperview()
-            make.left.equalToSuperview().offset(80)
-            make.width.height.equalTo(400)
+        hourlyCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(hourlySectionTitleLabel.snp.bottom).offset(10)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(150)
+            make.bottom.equalToSuperview().offset(-20)
         }
+    }
+    
+    private func updateWeatherData() {
+        guard let currentWeather = viewModel.getCurrentWeather() else { return }
+        
+        temperatureLabel.text = "\(currentWeather.temperature)°"
+        conditionLabel.text = currentWeather.condition
+        adviceLabel.text = currentWeather.advice
+        
+        // SF Symbols 사용
+        let iconName = currentWeather.weatherType.iconName
+        weatherIconImageView.image = UIImage(systemName: iconName)
+        
+        // 온도에 따른 아이콘 색상 변경
+        switch currentWeather.temperature {
+        case 30...:
+            weatherIconImageView.tintColor = .systemRed
+        case 25...29:
+            weatherIconImageView.tintColor = .systemOrange
+        case 20...24:
+            weatherIconImageView.tintColor = .systemYellow
+        case 15...19:
+            weatherIconImageView.tintColor = .systemBlue
+        default:
+            weatherIconImageView.tintColor = .systemCyan
+        }
+    }
+    
+    private func setupSwipeGesture() {
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+        
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
+        panGesture.delegate = self
+        view.addGestureRecognizer(panGesture)
+    }
+    
+    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: view)
+        let velocity = gesture.velocity(in: view)
+        
+        switch gesture.state {
+        case .ended, .cancelled:
+            let shouldPop = translation.x > Constants.Gesture.swipeBackMinimumDistance ||
+                           velocity.x > Constants.Gesture.swipeBackVelocityThreshold
+            
+            if shouldPop {
+                navigationController?.popViewController(animated: true)
+            }
+        default:
+            break
+        }
+    }
+}
+
+// MARK: - UICollectionViewDataSource
+extension WeatherDetailViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel.getHourlyWeatherCount()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HourlyWeatherCell.reuseIdentifier, for: indexPath) as? HourlyWeatherCell,
+              let hourlyWeather = viewModel.getHourlyWeather(at: indexPath.item) else {
+            return UICollectionViewCell()
+        }
+        
+        cell.configure(with: hourlyWeather)
+        return cell
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+extension WeatherDetailViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 80, height: 100)
     }
 }
 
