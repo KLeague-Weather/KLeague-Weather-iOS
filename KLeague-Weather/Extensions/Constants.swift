@@ -23,6 +23,16 @@ struct Constants {
         static let sectionInset: CGFloat = 16
     }
     
+    // MARK: - Gesture
+    
+    /// 제스처 관련 상수들
+    struct Gesture {
+        /// 스와이프 백 제스처 최소 거리
+        static let swipeBackMinimumDistance: CGFloat = 50.0
+        /// 스와이프 백 제스처 속도 임계값
+        static let swipeBackVelocityThreshold: CGFloat = 500.0
+    }
+    
     // MARK: - CollectionView
     struct CollectionView {
         static let itemsPerRow: CGFloat = 2
