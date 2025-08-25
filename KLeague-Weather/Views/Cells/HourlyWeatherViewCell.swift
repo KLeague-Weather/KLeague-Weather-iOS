@@ -62,20 +62,20 @@ final class HourlyWeatherCell: UICollectionViewCell {
     
     private func setupConstraints() {
         timeLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(12)
+            make.top.equalToSuperview().offset(8)
             make.centerX.equalToSuperview()
         }
         
         iconImageView.snp.makeConstraints { make in
-            make.top.equalTo(timeLabel.snp.bottom).offset(8)
+            make.top.equalTo(timeLabel.snp.bottom).offset(4)
             make.centerX.equalToSuperview()
             make.width.height.equalTo(32)
         }
         
         temperatureLabel.snp.makeConstraints { make in
-            make.top.equalTo(iconImageView.snp.bottom).offset(8)
+            make.top.equalTo(iconImageView.snp.bottom).offset(4)
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().offset(-12)
+            make.bottom.equalToSuperview().offset(-8)
         }
     }
     
