@@ -79,10 +79,13 @@ final class HourlyWeatherCell: UICollectionViewCell {
         }
     }
     
-    func configure(with data: HourlyWeather) {
-        timeLabel.text = data.time
-        temperatureLabel.text = "\(data.temperature)°"
-        iconImageView.image = UIImage(systemName: data.iconName)
+    func configure(time: String, iconName: String, temp: Int) {
+        timeLabel.text = time
+        temperatureLabel.text = "\(temp)°"
+        iconImageView.image = UIImage(systemName: iconName)
+        
+        // 아이콘 색상은 고정하거나 날씨 타입에 따라 다르게 설정할 수 있습니다.
+        iconImageView.tintColor = .label
     }
     
     override func prepareForReuse() {
