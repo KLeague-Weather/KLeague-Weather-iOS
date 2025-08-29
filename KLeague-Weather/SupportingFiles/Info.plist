@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>KMA_API_KEY</key>
+	<string>lgR40p%2FFDGZn7wPL%2FgLW%2FUdADdyweV8qY9PCqNWFkrt4Id5QvF71R5%2FewG3QIizH2yVxjLxrB0cJgnm5t%2BuWKQ%3D%3D</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>GmarketSansBold.otf</string>
