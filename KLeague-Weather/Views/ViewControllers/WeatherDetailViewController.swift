@@ -15,7 +15,7 @@ private struct MockWeatherData {
     let condition: String = "대체로 맑음"
     let highTemp: Int = 26
     let lowTemp: Int = 15
-    let weatherIconName: String = "sun.max.fill"
+    let weatherIconName: String = "sun.max.fill" // SF Symbol
     
     static let hourly: [MockHourlyData] = [
         .init(time: "Now", icon: "sun.max.fill", temp: 23),
@@ -53,10 +53,15 @@ private struct MockDailyData {
 
 
 // MARK: - WeatherDetailViewController
+import Combine
+
 final class WeatherDetailViewController: UIViewController {
     
     private let viewModel: WeatherDetailViewModel
     private let mockData = MockWeatherData() // 임시 목업 데이터
+    
+    // Combine 구독을 관리하기 위한 Set
+    private var cancellables = Set<AnyCancellable>()
     
     init(team: Team) {
         self.viewModel = WeatherDetailViewModel(team: team)
@@ -71,9 +76,10 @@ final class WeatherDetailViewController: UIViewController {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     
+    // --- 헤더 UI ---
     private lazy var stadiumNameLabel: UILabel = {
         let label = UILabel()
-        label.text = viewModel.getTeam().stadiumName
+        label.text = viewModel.getStadiumName()
         label.font = UIFont(name: Constants.Font.gmarketSansBold, size: 24)
         label.textColor = .label
         label.textAlignment = .center
@@ -100,13 +106,14 @@ final class WeatherDetailViewController: UIViewController {
     
     private lazy var highLowTempLabel: UILabel = {
         let label = UILabel()
-        label.text = "최고:\(mockData.highTemp)°  최저:\(mockData.lowTemp)°"
+        label.text = "\(mockData.highTemp)°  \(mockData.lowTemp)°"
         label.font = UIFont(name: Constants.Font.gmarketSansMedium, size: 16)
         label.textColor = .label
         label.textAlignment = .center
         return label
     }()
     
+    // --- 시간별 예보 UI ---
     private let hourlyForecastContainer = UIView.createContainerView()
     private let hourlyTitleLabel = UILabel.createTitleLabel(with: "시간별 예보")
     private lazy var hourlyCollectionView: UICollectionView = {
@@ -124,7 +131,7 @@ final class WeatherDetailViewController: UIViewController {
         return collectionView
     }()
     
-    // 실시간 예보
+    // --- 주간 예보 UI ---
     private let dailyForecastContainer = UIView.createContainerView()
     private let dailyTitleLabel = UILabel.createTitleLabel(with: "주간 예보")
     private lazy var dailyTableView: UITableView = {
@@ -142,9 +149,43 @@ final class WeatherDetailViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
+        bindViewModelForConsole() // ViewModel과 연동하여 콘솔에 출력
         
         navigationController?.navigationBar.tintColor = .label
         navigationItem.title = ""
+    }
+    
+    // MARK: - ViewModel Binding for Console Output
+    private func bindViewModelForConsole() {
+        print("--- API 요청 시작: ViewModel과 바인딩 ---")
+
+        viewModel.$temperature
+            .dropFirst() // 초기값 "--"는 무시
+            .sink { temp in
+                print("✅ 온도 업데이트: \(temp)")
+            }
+            .store(in: &cancellables)
+
+        viewModel.$humidity
+            .dropFirst() // 초기값 "--"는 무시
+            .sink { humidity in
+                print("✅ 습도 업데이트: \(humidity)")
+            }
+            .store(in: &cancellables)
+
+        viewModel.$precipitation
+            .dropFirst() // 초기값 "정보 없음"은 무시
+            .sink { precipitation in
+                print("✅ 강수형태 업데이트: \(precipitation)")
+            }
+            .store(in: &cancellables)
+
+        viewModel.$errorMessage
+            .compactMap { $0 } // nil이 아닌 에러 메시지만 받음
+            .sink { errorMessage in
+                print("❌ 에러 발생: \(errorMessage)")
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Setup
@@ -265,7 +306,7 @@ extension WeatherDetailViewController: UITableViewDataSource {
 }
 
 
-// MARK: - extension, custom cell
+// MARK: - Helper Extensions & Custom Cells
 
 fileprivate extension UIView {
     static func createContainerView() -> UIView {
@@ -286,17 +327,6 @@ fileprivate extension UILabel {
         return label
     }
 }
-
-// MARK: - HourlyWeatherCell (Assuming it exists and has a new configure method)
-// HourlyWeatherViewCell.swift 파일에 아래와 같은 configure 메소드가 필요합니다.
-/*
- func configure(time: String, iconName: String, temp: Int) {
-     timeLabel.text = time
-     weatherIconImageView.image = UIImage(systemName: iconName)
-     temperatureLabel.text = "\(temp)°"
- }
-*/
-
 
 // MARK: - DailyForecastCell
 fileprivate class DailyForecastCell: UITableViewCell {
@@ -366,8 +396,8 @@ fileprivate class DailyForecastCell: UITableViewCell {
     func configure(day: String, iconName: String, high: Int, low: Int) {
         dayLabel.text = day
         weatherIcon.image = UIImage(systemName: iconName)
-        highTempLabel.text = "\(high)°"
-        lowTempLabel.text = "\(low)°"
+        highTempLabel.text = "최고:\(high)°"
+        lowTempLabel.text = "최저:\(low)°"
     }
 }
 
@@ -376,13 +406,10 @@ fileprivate class DailyForecastCell: UITableViewCell {
 #if DEBUG
 struct WeatherDetailViewController_Previews: PreviewProvider {
     static var previews: some View {
-        // teamColor 파라미터가 제거된 생성자를 사용
         let team = Team(id: 13, name: "수원삼성블루윙즈", league: .kLeague2, logoURL: "suwonsamsung_logo", stadiumName: "수원월드컵경기장", nx: "62", ny: "121")
-        
-        // 네비게이션 컨트롤러에 임베드하여 프리뷰 확인
         NavigationView {
             WeatherDetailViewController(team: team)
-                .toPreview() // UIViewController를 SwiftUI View로 변환
+                .toPreview()
                 .navigationBarTitleDisplayMode(.inline)
         }
     }

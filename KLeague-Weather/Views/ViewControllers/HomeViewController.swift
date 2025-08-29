@@ -107,7 +107,6 @@ final class HomeViewController: UIViewController {
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.width.equalToSuperview()
-            make.height.equalTo(calculateTotalContentHeight())
         }
         
         segmentedControl.snp.makeConstraints { make in
@@ -155,10 +154,7 @@ final class HomeViewController: UIViewController {
             make.height.equalTo(calculateCollectionViewHeight())
         }
         
-        // 스크롤뷰의 contentSize 업데이트
-        contentView.snp.updateConstraints { make in
-            make.height.equalTo(calculateTotalContentHeight())
-        }
+        
     }
     
     private func setupActions() {
